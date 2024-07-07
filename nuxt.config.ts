@@ -1,8 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import Aura from '@primevue/themes/aura';
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ["nuxt-vuefire"],
+  modules: ["nuxt-vuefire", "@primevue/nuxt-module", ["@nuxtjs/google-fonts", {
+    families: {
+      Roboto: true,
+    }
+  }]],
   nitro: {
     preset: "firebase",
     firebase: {
@@ -13,6 +19,25 @@ export default defineNuxtConfig({
         maxInstances: 3,
         enforceAppCheck: true
       },
+    }
+  },
+  css: [
+    'primeicons/primeicons.css',
+    'assets/css/main.css'
+  ],
+  googleFonts: {
+    display: 'swap' // 'auto' | 'block' | 'swap' | 'fallback' | 'optional'
+  },
+  primevue: {
+    options: {
+      ripple: true,
+      inputVariant: 'filled',
+      theme: {
+        preset: Aura
+      }
+    },
+    components: {
+      include: ['Button', 'DataTable']
     }
   },
   vuefire: {
@@ -44,4 +69,15 @@ export default defineNuxtConfig({
       measurementId: "G-LBHTX4PRMQ"
     },
   },
+  runtimeConfig: {
+    public: {
+      firebaseAdmin: {
+        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+        privateKey: process.env.FIREBASE_PRIVATE_ADMIN_KEY
+          ? process.env.FIREBASE_PRIVATE_ADMIN_KEY.replace(/\\n/gm, "\n")
+          : undefined,
+        clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+      },
+    }
+  }
 })
