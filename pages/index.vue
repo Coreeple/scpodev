@@ -2,11 +2,17 @@
     Index
     <Button label="Login" @click="login" />
     <Button label="Logout" @click="logout" />
-    <ul>
-        <li v-for="todo in todos" :key="todo.id">
-            <span>{{ todo.id }} {{ todo.text }}</span>
-        </li>
-    </ul>
+
+    <SelectButton v-model="value" :options="pokerTypes" :allow-empty="false" optionLabel="value" dataKey="value" aria-labelledby="custom">
+        <template #option="slotProps">
+            <div class="flex flex-col items-center justify-items-center">
+                <div>
+                    <NuxtImg class="h-20 w-20 mb-2" :src="slotProps.option.icon" />
+                </div>
+                <p>{{ slotProps.option.text }}</p>
+            </div>
+        </template>
+    </SelectButton>
 </template>
 
 <script lang="ts" setup>
@@ -18,21 +24,25 @@ import {
     signInAnonymously, signOut
 } from 'firebase/auth'
 import {
-    useFirebaseAuth, useCollection, useFirestore
+    useFirebaseAuth,
 } from 'vuefire';
-import { collection } from 'firebase/firestore'
+
+const value = ref(null);
+
+const pokerTypes = [
+    { "text": "Fibonacci", "value": "fibonacci", "icon": "fibonacci.svg" },
+    { "text": "Modified Fibonacci", "value": "modified-fibonacci", "icon": "modified-fibonacci.svg" },
+    { "text": "T-Shirt Sizing", "value": "t-shirt-sizing", "icon": "t-shirt-sizing.svg" },
+]
 
 
 const auth = useFirebaseAuth()! // only exists on client side
 const user = useCurrentUser()
-const db = useFirestore()
 
 
-const todos = useCollection(collection(db, 'todos'), { ssrKey: 'todos' })
 
 const login = async () => {
     const test = await signInAnonymously(auth)
-
     console.log(test)
 }
 

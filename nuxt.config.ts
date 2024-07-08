@@ -1,6 +1,4 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import Aura from '@primevue/themes/aura';
-
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
@@ -8,7 +6,7 @@ export default defineNuxtConfig({
     families: {
       Roboto: true,
     }
-  }]],
+  }], "@nuxtjs/tailwindcss", "@nuxt/image"],
   nitro: {
     preset: "firebase",
     firebase: {
@@ -25,16 +23,19 @@ export default defineNuxtConfig({
     'primeicons/primeicons.css',
     'assets/css/main.css'
   ],
+  image: {
+    dir: 'assets/images'
+  },
   googleFonts: {
     display: 'swap' // 'auto' | 'block' | 'swap' | 'fallback' | 'optional'
   },
   primevue: {
+    importTheme: {
+      from: '@/themes/theme.ts'
+    },
     options: {
       ripple: true,
       inputVariant: 'filled',
-      theme: {
-        preset: Aura
-      }
     },
     components: {
       include: ['Button', 'DataTable']
