@@ -11,6 +11,7 @@
         <br>
         <Button label="Join a room" />
         <Button label="Create a room" @click="createRoom" />
+        <Button label="Go to room" />
         <Button label="Logout" @click="logout" />
 
         <div class="" v-if="user.roomId">
@@ -64,9 +65,15 @@ const auth = useFirebaseAuth()! // only exists on client side
 
 const { user } = storeToRefs(useUserStore())
 
+
 const login = async () => {
     loading.value = true
     await signInAnonymously(auth)
+
+    await useFetch('/api/users', {
+        method: "PUT"
+    })
+
     loading.value = false
 }
 
@@ -76,7 +83,7 @@ const logout = async () => {
 }
 
 const createRoom = async () => {
-    const { data } = await useFetch('/api/createRoom', {
+    const { data } = await useFetch('/api/rooms', {
         method: "POST"
     })
 

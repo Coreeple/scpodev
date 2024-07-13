@@ -1,20 +1,17 @@
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { UserRecord } from "firebase-admin/auth"
-
+import { Factory } from 'vue3-avataaars'
 
 export default defineEventHandler(async (event) => {
     const firestore = getFirestore()
-
     const user: UserRecord = event.context.auth.user
+    const userDisplayName = useRandomUserDisplayName()
 
-    const room = await firestore.collection("rooms").add({
-        owner: user.uid,
-        players: []
-    })
+    const avatarProps = Factory({ isCircle: true })
 
     await firestore.collection("users").doc(user.uid).set({
-        roomId: room.id
+        displayName: await userDisplayName,
+        avatar: JSON.stringify(avatarProps),
+        createdDate: FieldValue.serverTimestamp(),
     }, { merge: true })
-
-    return room.id
 })
