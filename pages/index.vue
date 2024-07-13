@@ -3,11 +3,13 @@
     <Button v-if="user" label="Logout" @click="logout" />
 
 
-
     <div v-if="user">
-    <div style="width: 100px; height: 100px;">
-        <Avatar v-bind="props" />
-    </div>
+        {{ user.displayName }}
+        <div style="width: 100px; height: 100px;">
+            <Avatar v-bind="JSON.parse(user.avatar)" />
+        </div>
+
+
     </div>
 
     <!-- <SelectButton v-model="value" :options="pokerTypes" :allow-empty="false" optionLabel="value" dataKey="value"
@@ -50,18 +52,17 @@ const pokerTypes = [
 
 
 const auth = useFirebaseAuth()! // only exists on client side
-const user = useCurrentUser()
+// const user = useCurrentUser()
 
 
+const { user } = storeToRefs(useUserStore())
 
 const login = async () => {
-    const test = await signInAnonymously(auth)
-    console.log(test)
+    await signInAnonymously(auth)
 }
 
 const logout = async () => {
-    const test = await signOut(auth)
-
-    console.log(test)
+    await signOut(auth)
+    useUserStore().$reset()
 }
 </script>
