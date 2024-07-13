@@ -23,6 +23,7 @@
     "nuxt-vuefire": "^1.0.2",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.0",
-    "vue": "latest"
+    "vue": "latest",
+    "vue3-avataaars": "^1.0.15"
   }
 }

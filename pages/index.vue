@@ -1,9 +1,17 @@
 <template>
-    Index
-    <Button label="Login" @click="login" />
-    <Button label="Logout" @click="logout" />
+    <Button v-if="!user" label="Anonymous Login" @click="login" />
+    <Button v-if="user" label="Logout" @click="logout" />
 
-    <SelectButton v-model="value" :options="pokerTypes" :allow-empty="false" optionLabel="value" dataKey="value" aria-labelledby="custom">
+
+
+    <div v-if="user">
+    <div style="width: 100px; height: 100px;">
+        <Avatar v-bind="props" />
+    </div>
+    </div>
+
+    <!-- <SelectButton v-model="value" :options="pokerTypes" :allow-empty="false" optionLabel="value" dataKey="value"
+        aria-labelledby="custom">
         <template #option="slotProps">
             <div class="flex flex-col items-center justify-items-center">
                 <div>
@@ -12,13 +20,18 @@
                 <p>{{ slotProps.option.text }}</p>
             </div>
         </template>
-    </SelectButton>
+</SelectButton> -->
+
+
 </template>
 
 <script lang="ts" setup>
 definePageMeta({
     middleware: ['auth'],
 })
+import { Avatar, Factory } from 'vue3-avataaars';
+const props = Factory({ "isCircle": true, "skinColor": "#FFDBB4", "hairColor": "#F59797", "topColor": "#E6E6E6", "clothesColor": "#65C9FF", "facialHairColor": "#F59797", "accessories": "Sunglasses", "eyes": "WinkWacky", "eyebrows": "SadConcerned", "mouth": "Default", "top": "Eyepatch", "clothes": "Overall", "graphicShirt": "Deer", "facialHair": "BeardLight" });
+
 
 import {
     signInAnonymously, signOut
