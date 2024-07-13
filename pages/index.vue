@@ -1,15 +1,21 @@
 <template>
-    <Button v-if="!user" label="Anonymous Login" @click="login" />
-    <Button v-if="user" label="Logout" @click="logout" />
+    <Button v-if="!user" label="Anonymous Login" :loading="loading" @click="login" />
 
 
-    <div v-if="user">
+    <div class="text-center" v-if="user">
+
         {{ user.displayName }}
         <div style="width: 100px; height: 100px;">
             <Avatar v-bind="JSON.parse(user.avatar)" />
         </div>
+        <br>
+        <Button label="Join a room" />
+        <Button label="Create a room" @click="createRoom" />
+        <Button label="Logout" @click="logout" />
 
-
+        <div class="" v-if="user.roomId">
+            Room
+        </div>
     </div>
 
     <!-- <SelectButton v-model="value" :options="pokerTypes" :allow-empty="false" optionLabel="value" dataKey="value"
@@ -39,10 +45,12 @@ import {
     signInAnonymously, signOut
 } from 'firebase/auth'
 import {
-    useFirebaseAuth,
+    useFirebaseAuth, useFirestore
 } from 'vuefire';
 
 const value = ref(null);
+const loading = ref(false);
+const roomId = ref<string | null>()
 
 const pokerTypes = [
     { "text": "Fibonacci", "value": "fibonacci", "icon": "fibonacci.svg" },
@@ -54,15 +62,24 @@ const pokerTypes = [
 const auth = useFirebaseAuth()! // only exists on client side
 // const user = useCurrentUser()
 
-
 const { user } = storeToRefs(useUserStore())
 
 const login = async () => {
+    loading.value = true
     await signInAnonymously(auth)
+    loading.value = false
 }
 
 const logout = async () => {
     await signOut(auth)
     useUserStore().$reset()
+}
+
+const createRoom = async () => {
+    const { data } = await useFetch('/api/createRoom', {
+        method: "POST"
+    })
+
+    console.log(data)
 }
 </script>
