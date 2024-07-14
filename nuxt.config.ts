@@ -35,11 +35,7 @@ export default defineNuxtConfig({
     },
     options: {
       ripple: true,
-      inputVariant: 'filled',
     },
-    components: {
-      include: ['Button', 'DataTable']
-    }
   },
   vuefire: {
     emulators: {

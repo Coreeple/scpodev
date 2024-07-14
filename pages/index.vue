@@ -1,23 +1,37 @@
 <template>
     <Button v-if="!user" label="Anonymous Login" :loading="loading" @click="login" />
 
+    <Card v-if="user" class="w-96 overflow-hidden">
+        <template #header>
+            <div class="relative">
+                <div class="absolute right-0 top-0">
+                    <Button @click="logout" severity="secondary" text icon="pi pi-sign-out" />
+                </div>
 
-    <div class="text-center" v-if="user">
-
-        {{ user.displayName }}
-        <div style="width: 100px; height: 100px;">
-            <Avatar v-bind="JSON.parse(user.avatar)" />
-        </div>
-        <br>
-        <Button label="Join a room" />
-        <Button label="Create a room" @click="createRoom" />
-        <Button label="Go to room" />
-        <Button label="Logout" @click="logout" />
-
-        <div class="" v-if="user.roomId">
-            Room
-        </div>
-    </div>
+                <div class="pt-10 pb-3 flex justify-center">
+                    <div class="size-32">
+                        <Avatar v-bind="JSON.parse(user.avatar)" />
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #title>
+            <div class="text-center">
+                {{ user.displayName }}
+            </div>
+        </template>
+        <template #subtitle>
+            <div class="text-center">
+                {{ user.title }}
+            </div>
+        </template>
+        <template #footer>
+            <div class="flex justify-center gap-4 mt-1">
+                <Button class="flex-1" severity="secondary" label="Katıl" />
+                <Button class="flex-1" label="Oluştur" @click="createRoom" />
+            </div>
+        </template>
+    </Card>
 
     <!-- <SelectButton v-model="value" :options="pokerTypes" :allow-empty="false" optionLabel="value" dataKey="value"
         aria-labelledby="custom">

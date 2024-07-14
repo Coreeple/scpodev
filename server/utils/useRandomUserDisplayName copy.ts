@@ -10,5 +10,5 @@ export const useRandomUserDisplayName = async () => {
         return names[Math.floor(Math.random() * names.length)]
     }
 
-    return "null"
+    return null
 }
