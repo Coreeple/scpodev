@@ -57,7 +57,7 @@ const props = Factory({ "isCircle": true, "skinColor": "#FFDBB4", "hairColor": "
 
 
 import {
-    signInAnonymously, signOut
+    signInAnonymously
 } from 'firebase/auth'
 import {
     useFirebaseAuth, useFirestore
@@ -75,7 +75,6 @@ const pokerTypes = [
 
 
 const auth = useFirebaseAuth()! // only exists on client side
-// const user = useCurrentUser()
 
 const { user } = storeToRefs(useUserStore())
 
@@ -92,7 +91,7 @@ const login = async () => {
 }
 
 const logout = async () => {
-    await signOut(auth)
+    await auth.currentUser?.delete()
     useUserStore().$reset()
 }
 
@@ -101,6 +100,6 @@ const createRoom = async () => {
         method: "POST"
     })
 
-    console.log(data)
+    navigateTo(`/rooms/${data.value}`)
 }
 </script>
