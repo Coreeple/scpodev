@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     families: {
       Roboto: true,
     }
-  }], "@nuxtjs/tailwindcss", "@nuxt/image", "@pinia/nuxt"],
+  }], "@nuxtjs/tailwindcss", "@nuxt/image", "@pinia/nuxt", "@nuxt/icon"],
   nitro: {
     preset: "firebase",
     firebase: {
