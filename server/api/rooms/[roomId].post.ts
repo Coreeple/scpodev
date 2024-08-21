@@ -1,8 +1,11 @@
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
 export default defineEventHandler(async (event) => {
+    const roomId: string = event.context.params!.roomId.toString()
+
     const firestore = getFirestore()
     const userId: string = event.context.auth.user.uid
+
 
     const userRef = await firestore.collection("users").doc(userId).get()
 
@@ -12,24 +15,14 @@ export default defineEventHandler(async (event) => {
 
     const user = userRef.data()!
 
-    if (user.ownedRoomId) {
-        return user.ownedRoomId
-    }
-
-    const room = await firestore.collection("rooms").add({
-        owner: userId,
-        players: [{
+    await firestore.collection("rooms/").doc(roomId).update({
+        players: FieldValue.arrayUnion({
             uid: userId,
             displayName: user.displayName,
             title: user.title,
-            avatar: user.avatar,
-        }]
+            avatar: user.avatar
+        })
     })
 
-    await firestore.collection("users").doc(userId).set({
-        ownedRoomId: room.id
-    }, { merge: true })
-
-
-    return room.id
+    return roomId
 })

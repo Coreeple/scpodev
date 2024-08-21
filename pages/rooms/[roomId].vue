@@ -4,8 +4,8 @@
             Poker Type
         </template>
         <template #content>
-            <SelectButton v-model="value" :options="pokerTypes" :allow-empty="false" optionLabel="value" dataKey="value"
-                aria-labelledby="custom">
+            <SelectButton v-model="pokerType" @change="changePokerType" :options="pokerTypes" :allow-empty="false"
+                optionLabel="value" dataKey="value" aria-labelledby="custom">
                 <template #option="slotProps">
                     <div class="flex flex-col items-center justify-items-center">
                         <div>
@@ -22,51 +22,29 @@
             Players
         </template>
         <template #content>
-
-            <ul class="divide-y divide-gray-200">
-                <li class="py-3 sm:py-4">
+            <ul class="divide-y divide-gray-200" v-if="room">
+                <li class="py-3 sm:py-4" v-for="player in room.players">
                     <div class="flex items-center gap-2">
                         <div>
                             <div class="size-20 mb-3">
-                                <Avatar v-bind="props" />
+                                <Avatar v-bind="JSON.parse(player.avatar)" />
                             </div>
                         </div>
                         <div class="flex-1">
                             <p class="text-md font-medium text-gray-900">
-                                Neil Sims
+                                {{ player.displayName }}
                             </p>
                             <p class="text-sm text-gray-500">
-                                email@windster.com
+                                {{ player.title }}
                             </p>
                         </div>
                         <div>
-                            <Button class="flex-1" size="small" severity="danger" label="Çıkar" />
-                        </div>
-                    </div>
-                </li>
-                <li class="py-3 sm:py-4">
-                    <div class="flex items-center gap-2">
-                        <div>
-                            <div class="size-20 mb-3">
-                                <Avatar v-bind="props" />
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-md font-medium text-gray-900">
-                                Neil Sims
-                            </p>
-                            <p class="text-sm text-gray-500">
-                                email@windster.com
-                            </p>
-                        </div>
-                        <div>
-                            <Button class="flex-1" size="small" severity="danger" label="Çıkar" />
+                            <Button v-if="player.uid !== room.owner" class="flex-1" size="small" severity="danger"
+                                label="Çıkar" />
                         </div>
                     </div>
                 </li>
             </ul>
-
-
         </template>
     </Card>
 
@@ -74,10 +52,12 @@
 
 <script setup lang="ts">
 import { Avatar, Factory } from 'vue3-avataaars';
+import {
+    collection, doc, setDoc, query, orderBy, getDoc
+} from 'firebase/firestore'
 
 const route = useRoute()
-const value = ref(null);
-const props = Factory({ "isCircle": true, "skinColor": "#FFDBB4", "hairColor": "#F59797", "topColor": "#E6E6E6", "clothesColor": "#65C9FF", "facialHairColor": "#F59797", "accessories": "Sunglasses", "eyes": "WinkWacky", "eyebrows": "SadConcerned", "mouth": "Default", "top": "Eyepatch", "clothes": "Overall", "graphicShirt": "Deer", "facialHair": "BeardLight" });
+const pokerType: any = ref(null);
 
 const pokerTypes = [
     { "text": "Fibonacci", "value": "fibonacci", "icon": "streamline-emojis:sunflower-1" },
@@ -85,5 +65,22 @@ const pokerTypes = [
     { "text": "T-Shirt Sizing", "value": "t-shirt-sizing", "icon": "streamline-emojis:t-shirt" },
 ]
 
-console.log(route.params.roomId)
+const db = useFirestore()
+
+
+const room: any = useDocument(doc(collection(db, 'rooms'), route.params.roomId.toString()))
+
+
+watch(() => room.value, (newValue: any) => {
+    if (newValue) {
+        pokerType.value = pokerTypes.find((pokerType) => pokerType.value === newValue.pokerType)
+    }
+})
+
+
+const changePokerType = async () => {
+    await setDoc(doc(db, "rooms", route.params.roomId.toString()), {
+        pokerType: pokerType.value.value
+    }, { merge: true });
+}
 </script>

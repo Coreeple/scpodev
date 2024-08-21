@@ -27,7 +27,7 @@
         </template>
         <template #footer>
             <div class="flex justify-center gap-4 mt-1">
-                <Button class="flex-1" severity="secondary" label="Katıl" />
+                <Button class="flex-1" severity="secondary" label="Katıl" @click="joinRoom" />
                 <Button class="flex-1" label="Odaya git" v-if="user.ownedRoomId" @click="gotoRoom" />
                 <Button class="flex-1" label="Oluştur" v-else @click="createRoom" />
             </div>
@@ -65,6 +65,14 @@ const login = async () => {
 const logout = async () => {
     await auth.currentUser?.delete()
     useUserStore().$reset()
+}
+
+const joinRoom = async () => {
+    const { data } = await useFetch('/api/rooms/PzTjO6J3M6SQjy0TQk5P', {
+        method: "POST"
+    })
+
+    navigateTo(`/rooms/${data.value}`)
 }
 
 const createRoom = async () => {
