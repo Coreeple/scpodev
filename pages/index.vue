@@ -19,7 +19,7 @@
         </UFormGroup>
 
         <UFormGroup name="qwe">
-          <USelectMenu v-model="state.pokerType" :options="pokerTypes" value-attribute="id" />
+          <USelectMenu v-model="state.pokerType" :options="$pokerTypes" value-attribute="name" />
         </UFormGroup>
 
         <UButton type="submit">
@@ -34,12 +34,7 @@
 import Joi from 'joi'
 import type { FormSubmitEvent } from '#ui/types'
 
-const pokerTypes = [
-  { "label": "Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, ☕ )", "id": "fibonacci" },
-  { "label": "Modified Fibonacci ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, ☕ )", "id": "modified-fibonacci" },
-  { "label": "T-shirts (XS, S, M, L, XL, ?, ☕ )", "id": "t-shirt" },
-  { "label": "Powers of 2 ( 0, 1, 2, 4, 8, 16, 32, 64, ?, ☕ )", "id": "power-of-2" }
-]
+const { $pokerTypes } = useNuxtApp()
 
 const isOpen = ref(false)
 
