@@ -32,11 +32,15 @@
 
 <script setup lang="ts">
 import Joi from 'joi'
+import {
+  signInAnonymously, updateProfile
+} from 'firebase/auth'
 import type { FormSubmitEvent } from '#ui/types'
 
 const { $pokerTypes } = useNuxtApp()
-
 const isOpen = ref(false)
+const auth = useFirebaseAuth()! // only exists on client side
+
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -48,7 +52,13 @@ const state = reactive({
   pokerType: "fibonacci"
 })
 
-const onSubmit = (event: FormSubmitEvent<any>) => {
-  console.log(event.data)
+const onSubmit = async (event: FormSubmitEvent<any>) => {
+  const credential = await signInAnonymously(auth)
+  await updateProfile(credential.user, {
+    displayName: "Anonymous"
+  })
+
+  await navigateTo(`/${credential.user.uid}`)
 }
+
 </script>
