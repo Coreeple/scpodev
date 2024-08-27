@@ -35,12 +35,14 @@ import Joi from 'joi'
 import {
   signInAnonymously, updateProfile
 } from 'firebase/auth'
+import { collection, addDoc } from 'firebase/firestore'
+
 import type { FormSubmitEvent } from '#ui/types'
 
 const { $pokerTypes } = useNuxtApp()
 const isOpen = ref(false)
 const auth = useFirebaseAuth()! // only exists on client side
-
+const db = useFirestore()
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -58,7 +60,21 @@ const onSubmit = async (event: FormSubmitEvent<any>) => {
     displayName: "Anonymous"
   })
 
-  await navigateTo(`/${credential.user.uid}`)
+  const game = await addDoc(collection(db, 'games'), {
+    name: state.name,
+    pokerType: state.pokerType,
+    owner: credential.user.uid,
+    players: {
+      [credential.user.uid]: {
+        uid: credential.user.uid,
+        displayName: "Anonymous",
+        isSpectator: false,
+        score: ""
+      }
+    }
+  })
+
+  await navigateTo(`/${game.id}`)
 }
 
 </script>

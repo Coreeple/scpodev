@@ -1,12 +1,15 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6" v-if="game">
+    <div>
+      <h1>{{ game.name }}</h1>
+    </div>
     <div class="flex flex-wrap justify-center gap-8">
-      <UChip size="md" position="bottom-right" :ui="{ base: '-mx-2 rounded-none ring-0', background: '' }"
-        :show="pokerValue !== undefined">
-        <UButton size="xl" label="Mehmet Emin" color="gray" />
+      <UChip v-for="player in players" size="md" position="bottom-right"
+        :ui="{ base: '-mx-2 rounded-none ring-0', background: '' }" :show="player.score !== ''">
+        <UButton size="xl" :label="player.displayName" color="gray" />
         <template #content>
           <!-- <UBadge color="blue" variant="solid">...</UBadge> -->
-          <UBadge color="white" variant="solid">{{ pokerValue }}</UBadge>
+          <UBadge color="white" variant="solid">{{ player.score }}</UBadge>
         </template>
       </UChip>
     </div>
@@ -21,17 +24,52 @@
 </template>
 
 <script setup lang="ts">
+import {
+  collection, doc, setDoc, updateDoc
+} from 'firebase/firestore'
+
+definePageMeta({
+  middleware: ["auth"]
+})
+
+const db = useFirestore()
+const user = useCurrentUser()
+
+const route = useRoute()
 const { $pokerTypes } = useNuxtApp()
-const pokerType = ref($pokerTypes.filter(m => m.name === "fibonacci")[0])
-const defaultIndex = ref(-1)
+
+const game: any = useDocument(doc(collection(db, 'games'), route.params.gameId.toString()))
+
+const defaultIndex = computed(() => {
+  return items.value.findIndex(item => item.label === game.value.players[user.value!.uid].score)
+})
+
+const pokerType = computed(() => {
+  return $pokerTypes.find(pokerType => pokerType.name === game.value.pokerType)
+})
 
 const items = computed(() => {
   return (pokerType.value.items as string[]).map(item => ({ label: item }))
 })
 
-const pokerValue = ref(items.value[defaultIndex.value]?.label)
+const players: any = computed(() => {
+  return Object.values(game.value.players).sort((a: any, b: any) => a.uid.localeCompare(b.uid))
+})
 
 const onChange = (index: number) => {
-  pokerValue.value = items.value[index].label
+  const score = items.value[index].label
+  const uid = user.value!.uid
+
+  setDoc(doc(collection(db, 'games'), route.params.gameId.toString()), {
+    players: {
+      [uid]: {
+        uid: uid,
+        displayName: user.value!.displayName,
+        isSpectator: false,
+        score: score
+      }
+    }
+  }, { merge: true })
 }
+
 </script>
